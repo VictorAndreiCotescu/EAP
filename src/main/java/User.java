@@ -1,13 +1,10 @@
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class User {
     public User(String name, String email, Date dob, double balance, int rank) {
 
-        this.id = counter.getAndIncrement()+1000;
+        this.id = counter.getAndIncrement()+1001;
         this.name = name;
         this.email = email;
         this.dob = dob;
@@ -16,7 +13,7 @@ public class User {
     }
 
     public User(){
-        this.id = counter.getAndIncrement()+1000;
+        this.id = 0;
     }
 
     public static AtomicInteger getCounter() {
@@ -83,9 +80,7 @@ public class User {
     private double balance;
     private int rank;
     private List<Card> cards = new ArrayList<>();
-
-
-
+    private TransactionHistory transactionHistory = new TransactionHistory();
 
 
 }

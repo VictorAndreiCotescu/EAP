@@ -12,18 +12,15 @@ public class Main {
         List<User> users = new ArrayList<>();
         List<Credentials> creds = new ArrayList<>();
 
-        User user = new User();
+
+
         try {
             manager.createUser(users, creds);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        manager.addCard(user);
-
-        for(Card card : user.getCards())
-            System.out.println(card.getCardNumber());
-
+        manager.logIn();
 
     }
 
