@@ -5,22 +5,11 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         Manager manager = new Manager();
 
-        List<User> users = new ArrayList<>();
-        List<Credentials> creds = new ArrayList<>();
-
-
-
-        try {
-            manager.createUser(users, creds);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        manager.logIn();
+        manager.system();
 
     }
 

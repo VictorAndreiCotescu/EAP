@@ -14,6 +14,44 @@ import java.util.*;
 
 public class Manager {
 
+    public void system() throws ParseException {
+
+        int userTryingToLogIn = startSession();
+        if (userTryingToLogIn > 2){ // daca logIn returneaza corect
+            session(userTryingToLogIn);
+        }
+
+    }
+
+    public int startSession() throws ParseException {
+
+        System.out.println("1. Log In");
+        System.out.println("2. Register");
+
+        Scanner cin = new Scanner(System.in);
+        switch (Integer.parseInt(cin.nextLine())) {
+
+            case 1:
+                return logIn(); //logIn returneaza userId int
+
+            case 2:
+                if (createUser()) // create user returneaza bool in functie de success/fail
+                        startSession();
+                    return 1;
+
+            default:
+                startSession();
+                break;
+        }
+        return 0;
+    }
+
+    public void session(int userId){
+
+        System.out.println();
+
+    }
+
     public static String encrypt(String strToEncrypt, String SECRET_KEY, String SALT) {
         try {
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -77,7 +115,7 @@ public class Manager {
         return m.matches();
     }
 
-    public void createUser(List<User> users, List<Credentials> creds) throws ParseException {
+    public boolean createUser() throws ParseException {
 
 
         Scanner cin = new Scanner(System.in);
@@ -114,23 +152,22 @@ public class Manager {
         User user = new User(_name, _email, _date, 0.0, 0);
         Credentials credentials = new Credentials(user.getId(), _passwd);
 
-        users.add(user);
-        creds.add(credentials);
-
-        File file = new File("Accounts");
+        File file = new File("./src/main/java/Accounts");
 
         try {
-            FileWriter writer = new FileWriter("Accounts");
-            writer.write(encrypt(_email, _passwd, _email+_passwd) + " ");
-            writer.write(encrypt(_passwd, _email,_email+_passwd));
+            FileWriter writer = new FileWriter("./src/main/java/Accounts");
+            writer.write(encrypt(_email, _passwd, _email + _passwd) + " ");
+            writer.write(encrypt(_passwd, _email, _email + _passwd));
             writer.close();
             System.out.println("Account created successfully!");
+            return true;
         } catch (IOException e) {
             System.out.println("An error occurred. Please try again!");
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public void addCard(User user) {
@@ -149,7 +186,7 @@ public class Manager {
 
     }
 
-    public User logIn() {
+    public int logIn() {
 
         User user = new User();
 
@@ -161,31 +198,34 @@ public class Manager {
         System.out.print("Password: ");
         String _passwd = cin.nextLine();
 
+        boolean ok = false;
+
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("Accounts"));
+            reader = new BufferedReader(new FileReader("./src/main/java/Accounts"));
             String line = reader.readLine();
 
             while (line != null) {
 
                 String values[] = line.split("\\s+");
 
-                System.out.println(decrypt(values[0], _passwd, _email+_passwd));
-                System.out.println(decrypt(values[1], _email,_email+_passwd));
+                System.out.println(decrypt(values[0], _passwd, _email + _passwd));
+                System.out.println(decrypt(values[1], _email, _email + _passwd));
 
-                if (Objects.equals(decrypt(values[0], _passwd, _email + _passwd), _email) && Objects.equals(decrypt(values[1], _email, _email + _passwd), _passwd)) {
-                        System.out.println("Successfully logged in!");
-                }
+                if (Objects.equals(decrypt(values[0], _passwd, _email + _passwd), _email) && Objects.equals(decrypt(values[1], _email, _email + _passwd), _passwd))
+                    ok = true;
 
                 line = reader.readLine();
             }
             reader.close();
-            System.out.println("Incorrect email or password! Try again.");
         } catch (Exception e) {
             e.printStackTrace();
+            return -1;
         }
-
-        return user;
+        if(ok)
+            return user.getId();
+        else
+            return -1;
     }
 
 }
