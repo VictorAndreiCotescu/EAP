@@ -11,8 +11,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import RW.*;
 
 public class Manager {
+
+    CSVWriter csvWriter = CSVWriter.getInstance();
 
     public void system() throws ParseException {
 
@@ -142,6 +145,7 @@ public class Manager {
             _passwdCheck = cin.nextLine();
         }
 
+        //TODO check min 18
         System.out.print("Date of birth: ");
         String _dob = cin.nextLine();
 
@@ -152,13 +156,13 @@ public class Manager {
         User user = new User(_name, _email, _date, 0.0, 0);
         Credentials credentials = new Credentials(user.getId(), _passwd);
 
-        File file = new File("./src/main/java/Accounts");
+        File accsFile = new File("./src/main/java/accs.csv");
 
         try {
-            FileWriter writer = new FileWriter("./src/main/java/Accounts");
-            writer.write(encrypt(_email, _passwd, _email + _passwd) + " ");
-            writer.write(encrypt(_passwd, _email, _email + _passwd));
-            writer.close();
+            csvWriter.write(accsFile,user.getId() + ",");
+            csvWriter.write(accsFile,encrypt(_email, _passwd, _email + _passwd) + ",");
+            //csvWriter.append(encrypt(_passwd, _email, _email + _passwd) + "\n");
+
             System.out.println("Account created successfully!");
             return true;
         } catch (IOException e) {
@@ -209,8 +213,8 @@ public class Manager {
 
                 String values[] = line.split("\\s+");
 
-                System.out.println(decrypt(values[0], _passwd, _email + _passwd));
-                System.out.println(decrypt(values[1], _email, _email + _passwd));
+                /*System.out.println(decrypt(values[0], _passwd, _email + _passwd));
+                System.out.println(decrypt(values[1], _email, _email + _passwd));*/
 
                 if (Objects.equals(decrypt(values[0], _passwd, _email + _passwd), _email) && Objects.equals(decrypt(values[1], _email, _email + _passwd), _passwd))
                     ok = true;
