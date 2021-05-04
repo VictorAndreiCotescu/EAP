@@ -12,9 +12,13 @@ public class Transaction {
     }
 
     private static final AtomicInteger counter = new AtomicInteger();
-    private final int id;
+    private int id = 0;
     private int userId;
     private double sum;
     private boolean completed;
 
+    public Transaction() {
+
+
+    }
 }

@@ -7,6 +7,10 @@ public class Credentials {
         this.passwd = passwd;
     }
 
+    public Credentials() {
+
+    }
+
     public int getUserId() {
         return userId;
     }
