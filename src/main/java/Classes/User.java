@@ -4,9 +4,17 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class User {
-    public User(String name, String email, Date dob, double balance, int rank) {
-
+    public User(String name, String email, String dob, double balance, int rank) {
         this.id = counter.getAndIncrement()+1001;
+        this.name = name;
+        this.email = email;
+        this.dob = dob;
+        this.balance = balance;
+        this.rank = rank;
+    }
+
+    public User(int id, String name, String email, String dob, double balance, int rank) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.dob = dob;
@@ -42,11 +50,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getDob() {
+    public String getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(String dob) {
         this.dob = dob;
     }
 
@@ -78,7 +86,7 @@ public class User {
     private final int id;
     private String name;
     private String email;
-    private Date dob;
+    private String dob;
     private double balance;
     private int rank;
     private List<Card> cards = new ArrayList<>();

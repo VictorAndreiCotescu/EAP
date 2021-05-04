@@ -23,7 +23,7 @@ public class Manager {
     public void system() throws ParseException, IOException {
 
         int userTryingToLogIn = startSession();
-        if (userTryingToLogIn > 2){ // daca logIn returneaza corect
+        if (userTryingToLogIn > 2) { // daca logIn returneaza corect
             session(userTryingToLogIn);
         }
 
@@ -43,8 +43,8 @@ public class Manager {
 
             case 2:
                 if (createUser()) // create user returneaza bool in functie de success/fail
-                        startSession();
-                    return 1;
+                    startSession();
+                return 1;
 
             case 3:
                 return 0;
@@ -56,7 +56,7 @@ public class Manager {
         return 0;
     }
 
-    public void session(int userId){
+    public void session(int userId) {
 
         System.out.println();
 
@@ -156,15 +156,17 @@ public class Manager {
         System.out.print("Date of birth: ");
         String _dob = cin.nextLine();
 
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.GERMANY);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         Date _date = format.parse(_dob);
 
+        String strDate = format.format(_date);
 
-        User user = new User(_name, _email, _date, 0.0, 0);
+
+        User user = new User(_name, _email, strDate, 0.0, 0);
         Credentials credentials = new Credentials(user.getId(), encrypt(_email, _passwd, _email + _passwd));
 
 
-        CSVWriter csvWriter = new CSVWriter<>();
+        CSVWriter csvWriter = CSVWriter.getInstance();
 
         try {
             //To accounts csv
@@ -232,7 +234,7 @@ public class Manager {
             e.printStackTrace();
             return -1;
         }
-        if(ok)
+        if (ok)
             return user.getId();
         else
             return -1;
