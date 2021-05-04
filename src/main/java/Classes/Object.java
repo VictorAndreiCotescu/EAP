@@ -1,3 +1,5 @@
+package Classes;
+
 public class Object {
 
     public Object(String name, double startPrice, String description) {

@@ -1,36 +1,125 @@
 package RW;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import Classes.*;
 
-public class CSVWriter {
+import java.io.*;
+import java.util.Scanner;
 
 
-    private static CSVWriter single_instance = null;
+public class CSVWriter<T> {
 
-    // private constructor restricted to this class itself
-    private CSVWriter() {}
+    private T obj;
 
-    public void write(File csvFile, String str) throws IOException {
-        FileWriter csvWriter = new FileWriter(csvFile);
-        csvWriter.append(str+",");
+    private int getLastId() throws FileNotFoundException {
+
+
+        BufferedReader br = null;
+        String[] parts = {""};
+        try {
+
+            br = new BufferedReader(new FileReader("src/main/java/accs.csv"));
+            String sCurrentLine;
+
+            String lastLine = "";
+
+            while ((sCurrentLine = br.readLine()) != null)
+                lastLine = sCurrentLine;
+
+
+            parts = lastLine.split(",");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        if (parts[0] == "")
+            return -1;
+        else
+            return Integer.parseInt(parts[0]);
+
     }
 
-    public void nextLine(File csvFile) throws IOException {
-        FileWriter csvWriter = new FileWriter(csvFile);
-        csvWriter.append("\n");
+
+    public void write(T obj) throws IOException {
+
+
+        if (obj.getClass() == User.class)
+            try (FileWriter writer = new FileWriter("src/main/java/accs.csv", true)) {
+
+                StringBuilder sb = new StringBuilder();
+
+
+                int id = getLastId();
+                if(id == -1)
+                    sb.append(((User) obj).getId());
+                else
+                    sb.append(getLastId() + 1);
+
+                sb.append(',');
+
+
+                sb.append(((User) obj).getName());
+                sb.append(',');
+                sb.append(((User) obj).getEmail());
+                sb.append(',');
+                sb.append(((User) obj).getDob());
+                sb.append(',');
+                sb.append(((User) obj).getBalance());
+                sb.append(',');
+                sb.append(((User) obj).getRank());
+                sb.append('\n');
+
+                writer.write(sb.toString());
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+
+        if (obj.getClass() == Credentials.class)
+            try (FileWriter writer = new FileWriter("src/main/java/creds.csv", true)) {
+
+                StringBuilder sb = new StringBuilder();
+
+                int id = getLastId();
+                if(id == -1)
+                    sb.append(((User) obj).getId());
+                else
+                    sb.append(getLastId());
+
+                sb.append(',');
+                sb.append(((Credentials) obj).getPasswd());
+                sb.append('\n');
+
+                writer.write(sb.toString());
+
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+
+        if (obj.getClass() == Transaction.class)
+            try (FileWriter writer = new FileWriter("src/main/java/transactions.csv", true)) {
+
+                //do smth
+
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+
+        if (obj.getClass() == Auction.class)
+            try (FileWriter writer = new FileWriter("src/main/java/auctions.csv", true)) {
+
+                //do smth
+
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+
+
     }
-
-    // static method to create instance of Singleton class
-    public static CSVWriter getInstance()
-    {
-        if (single_instance == null)
-            single_instance = new CSVWriter();
-
-        return single_instance;
-    }
-
-
 
 }

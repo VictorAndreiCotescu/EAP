@@ -1,4 +1,6 @@
-public class FillUp extends Transaction{
+package Classes;
+
+public class FillUp extends Transaction {
 
     public FillUp(int userId, double sum, boolean completed, int cardId) {
         super(userId, sum, completed);

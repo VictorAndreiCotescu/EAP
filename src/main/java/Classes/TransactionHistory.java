@@ -1,3 +1,5 @@
+package Classes;
+
 import java.util.List;
 
 class Tuple<E, F> {

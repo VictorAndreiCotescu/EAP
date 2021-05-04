@@ -11,13 +11,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import Classes.Card;
+import Classes.Credentials;
+import Classes.User;
 import RW.*;
 
 public class Manager {
 
-    CSVWriter csvWriter = CSVWriter.getInstance();
 
-    public void system() throws ParseException {
+    public void system() throws ParseException, IOException {
 
         int userTryingToLogIn = startSession();
         if (userTryingToLogIn > 2){ // daca logIn returneaza corect
@@ -26,10 +29,11 @@ public class Manager {
 
     }
 
-    public int startSession() throws ParseException {
+    public int startSession() throws ParseException, IOException {
 
         System.out.println("1. Log In");
         System.out.println("2. Register");
+        System.out.println("3. Exit");
 
         Scanner cin = new Scanner(System.in);
         switch (Integer.parseInt(cin.nextLine())) {
@@ -41,6 +45,9 @@ public class Manager {
                 if (createUser()) // create user returneaza bool in functie de success/fail
                         startSession();
                     return 1;
+
+            case 3:
+                return 0;
 
             default:
                 startSession();
@@ -118,7 +125,7 @@ public class Manager {
         return m.matches();
     }
 
-    public boolean createUser() throws ParseException {
+    public boolean createUser() throws ParseException, IOException {
 
 
         Scanner cin = new Scanner(System.in);
@@ -138,7 +145,7 @@ public class Manager {
         System.out.print("Confirm password: ");
         String _passwdCheck = cin.nextLine();
         while (!_passwd.equals(_passwdCheck)) {
-            System.err.println("Password must match! Try Again.");
+            System.err.print("Password must match! Try Again.\n");
             System.out.print("Set password: ");
             _passwd = cin.nextLine();
             System.out.print("Confirm password: ");
@@ -154,20 +161,19 @@ public class Manager {
 
 
         User user = new User(_name, _email, _date, 0.0, 0);
-        Credentials credentials = new Credentials(user.getId(), _passwd);
+        Credentials credentials = new Credentials(user.getId(), encrypt(_email, _passwd, _email + _passwd));
 
-        File accsFile = new File("./src/main/java/accs.csv");
+
+        CSVWriter csvWriter = new CSVWriter<>();
 
         try {
-            csvWriter.write(accsFile,user.getId() + ",");
-            csvWriter.write(accsFile,encrypt(_email, _passwd, _email + _passwd) + ",");
-            //csvWriter.append(encrypt(_passwd, _email, _email + _passwd) + "\n");
+            //To accounts csv
+
+            csvWriter.write(user);
+            csvWriter.write(credentials);
 
             System.out.println("Account created successfully!");
             return true;
-        } catch (IOException e) {
-            System.out.println("An error occurred. Please try again!");
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,7 +184,7 @@ public class Manager {
 
         Scanner cin = new Scanner(System.in);
 
-        System.out.print("Card number: ");
+        System.out.print("Classes.Card number: ");
         String cardNumber = cin.nextLine();
 
         System.out.print("CVV: ");
