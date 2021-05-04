@@ -8,7 +8,13 @@ import java.util.Scanner;
 
 public class CSVWriter<T> {
 
-    private T obj;
+    private static final CSVWriter instance = new CSVWriter();
+
+    private CSVWriter(){}
+
+    public static CSVWriter getInstance(){
+        return instance;
+    }
 
     private int getLastId() throws FileNotFoundException {
 
@@ -38,7 +44,7 @@ public class CSVWriter<T> {
             }
         }
 
-        if (parts[0] == "")
+        if (parts[0].equals(""))
             return -1;
         else
             return Integer.parseInt(parts[0]);
@@ -56,7 +62,7 @@ public class CSVWriter<T> {
 
 
                 int id = getLastId();
-                if(id == -1)
+                if (id == -1)
                     sb.append(((User) obj).getId());
                 else
                     sb.append(getLastId() + 1);
@@ -86,7 +92,7 @@ public class CSVWriter<T> {
                 StringBuilder sb = new StringBuilder();
 
                 int id = getLastId();
-                if(id == -1)
+                if (id == -1)
                     sb.append(((User) obj).getId());
                 else
                     sb.append(getLastId());
