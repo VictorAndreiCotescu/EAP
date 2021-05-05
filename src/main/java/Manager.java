@@ -25,14 +25,18 @@ public class Manager {
     private User user = new User();
     private Credentials creds = new Credentials();
     private Transaction transaction = new Transaction();
+    private Auction auction = new Auction();
 
     private List <User> users = new ArrayList<>();
     private List <Credentials> credentials = new ArrayList<>();
+    private List <Auction> auctions = new ArrayList<>();
 
     private File usersFile = new File ("src/main/java/accs.csv");
     private File credsFile = new File ("src/main/java/creds.csv");
     private File transactionsFile = new File ("src/main/java/transactions.csv");
     private File auctionsFile = new File ("src/main/java/auctions.csv");
+
+
 
 
     public static void clearScreen() {
@@ -109,12 +113,12 @@ public class Manager {
         switch (Integer.parseInt(cin.nextLine())) {
 
             case 1:
-
+                auctions = reader.read(auction,auctionsFile);
+                for(int i = 0;  i < auctions.size(); ++i)
+                    System.out.println(auctions.get(i).getId());
             case 2:
 
             case 3:
-
-
 
             case 4:
 
@@ -159,7 +163,7 @@ public class Manager {
             }
         }
         clearScreen();
-        System.out.println("User: " + parts[1] + " ID: " + parts[0]  + '\n');
+        System.out.println("User: " + parts[1] + " ID: " + parts[0]  + '\n' + "Rank: " + parts[5]);
         System.out.println("Email:" + parts[2] + '\n');
         System.out.println("Balance: " + parts[4]);
 
@@ -267,7 +271,7 @@ public class Manager {
         Scanner cin = new Scanner(System.in);
         System.out.print("Email: ");
         String _email = cin.nextLine();
-        while (!isValidEmailAddress(_email)) {
+        while (!isValidEmailAddress(_email)) { //TODO check if unique
             System.err.println("Email not ok. Try Again.");
             System.out.print("Email: ");
             _email = cin.nextLine();

@@ -8,6 +8,14 @@ public class Object {
         this.description = description;
     }
 
+    public Object() {
+
+    }
+
+    public Object(String name){
+        name = name;
+    }
+
     public String getName() {
         return name;
     }

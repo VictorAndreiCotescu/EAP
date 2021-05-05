@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.Object;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -135,9 +136,11 @@ public class CSVReader<T> {
         String[] parts = {""};
         List<T> lst = new ArrayList<>();
         User usr = new User();
+        Object object = new Classes.Object();
+        List <Classes.Object> objects = new ArrayList<>();
         try {
 
-            br = new BufferedReader(new FileReader("src/main/java/accs.csv"));
+            br = new BufferedReader(new FileReader("src/main/java/auctions.csv"));
             String sCurrentLine;
 
             String lastLine = "";
@@ -148,8 +151,12 @@ public class CSVReader<T> {
 
                 parts = lastLine.split(",");
 
+                object = new Classes.Object(parts[1]);
+                objects.add((Classes.Object) object);
 
-                lst.add((T) new User(Integer.parseInt(parts[0]), parts[1], parts[2], parts[3], Double.parseDouble(parts[4]), Integer.parseInt(parts[5])));
+                List<String> lst2 = new ArrayList<>();
+                lst2.add(parts[1]);
+                lst.add((T) new Auction(Integer.parseInt(parts[0]), objects, parts[2], Integer.parseInt(parts[3])));
             }
 
         } catch (IOException e) {
@@ -176,10 +183,11 @@ public class CSVReader<T> {
         if(obj.getClass() == Credentials.class)
             lst = readCreds(obj);
 
-        /*if(obj.getClass() == Transaction.class)
-            readTransactions(obj);
+        if(obj.getClass() == Transaction.class)
+            lst = readTransactions(obj);
+
         if(obj.getClass() == Auction.class)
-            readAuctions(obj);*/
+            lst = readAuctions(obj);
 
         return lst;
 

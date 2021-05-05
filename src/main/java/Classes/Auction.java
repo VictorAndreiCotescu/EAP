@@ -5,11 +5,15 @@ import java.util.List;
 
 public class Auction {
 
-    public Auction(int id, List<Object> objects, Date startDate, int minRankEntry) {
+    public Auction(int id, List<Object> objects, String startDate, int minRankEntry) {
         this.id = id;
         this.objects = objects;
         this.startDate = startDate;
         this.minRankEntry = minRankEntry;
+    }
+
+    public Auction() {
+
     }
 
     public int getId() {
@@ -28,11 +32,11 @@ public class Auction {
         this.objects = objects;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
@@ -46,6 +50,6 @@ public class Auction {
 
     private int id;
     private List<Object> objects;
-    private Date startDate;
+    private String startDate;
     private int minRankEntry;
 }
