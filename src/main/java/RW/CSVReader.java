@@ -174,7 +174,7 @@ public class CSVReader<T> {
             lst = readUser(obj);
 
         if(obj.getClass() == Credentials.class)
-            readCreds(obj);
+            lst = readCreds(obj);
 
         /*if(obj.getClass() == Transaction.class)
             readTransactions(obj);

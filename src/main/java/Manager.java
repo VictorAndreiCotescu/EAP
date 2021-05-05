@@ -11,26 +11,57 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-import Classes.Card;
-import Classes.Credentials;
-import Classes.User;
+import Classes.*;
 import RW.*;
 
 public class Manager {
+
+    private CSVReader reader = CSVReader.getInstance();
+    private Logger logger = Logger.getInstance();
+
+    private User user = new User();
+    private Credentials creds = new Credentials();
+    private Transaction transaction = new Transaction();
+
+    private List <User> users = new ArrayList<>();
+    private List <Credentials> credentials = new ArrayList<>();
+
+    private File usersFile = new File ("src/main/java/accs.csv");
+    private File credsFile = new File ("src/main/java/creds.csv");
+    private File transactionsFile = new File ("src/main/java/transactions.csv");
+    private File auctionsFile = new File ("src/main/java/auctions.csv");
+
+
+
+
+
+    private static final Manager instance = new Manager();
+
+    private Manager(){}
+
+    public static Manager getInstance(){
+        return instance;
+    }
 
 
     public void system() throws ParseException, IOException {
 
         int userTryingToLogIn = startSession();
-        if (userTryingToLogIn > 2) { // daca logIn returneaza corect
+        if (userTryingToLogIn > 2) // daca logIn returneaza corect
             session(userTryingToLogIn);
-        }
+
 
     }
 
     public int startSession() throws ParseException, IOException {
 
+
+
+
+        logger.log("login session started");
         System.out.println("1. Log In");
         System.out.println("2. Register");
         System.out.println("3. Exit");
@@ -42,24 +73,26 @@ public class Manager {
                 return logIn(); //logIn returneaza userId int
 
             case 2:
-                if (createUser()) // create user returneaza bool in functie de success/fail
+                if (createUser()) { // create user returneaza bool in functie de success/fail
                     startSession();
+
+                }
                 return 1;
 
             case 3:
                 return 0;
 
             default:
+                logger.log("login failed by wrong user input");
                 startSession();
                 break;
         }
         return 0;
     }
 
-    public void session(int userId) {
-
-        System.out.println();
-
+    public void session(int userId) throws IOException {
+        logger.log("user succesfully logged in");
+        System.out.println("Bine ati venit in contul dvs.!");
     }
 
     public static String encrypt(String strToEncrypt, String SECRET_KEY, String SALT) {
@@ -175,6 +208,7 @@ public class Manager {
             csvWriter.write(credentials);
 
             System.out.println("Account created successfully!");
+            logger.log("account successfully created");
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,7 +234,8 @@ public class Manager {
 
     public int logIn() {
 
-        User user = new User();
+        users = reader.read(user, usersFile);
+        credentials = reader.read(creds, credsFile);
 
         Scanner cin = new Scanner(System.in);
 
@@ -210,34 +245,20 @@ public class Manager {
         System.out.print("Password: ");
         String _passwd = cin.nextLine();
 
-        boolean ok = false;
-
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader("./src/main/java/Accounts"));
-            String line = reader.readLine();
-
-            while (line != null) {
-
-                String values[] = line.split("\\s+");
-
-                /*System.out.println(decrypt(values[0], _passwd, _email + _passwd));
+        /*System.out.println(decrypt(values[0], _passwd, _email + _passwd));
                 System.out.println(decrypt(values[1], _email, _email + _passwd));*/
 
-                if (Objects.equals(decrypt(values[0], _passwd, _email + _passwd), _email) && Objects.equals(decrypt(values[1], _email, _email + _passwd), _passwd))
-                    ok = true;
+       /* System.out.println(credentials.get(0).getPasswd());
 
-                line = reader.readLine();
-            }
-            reader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-        if (ok)
-            return user.getId();
-        else
-            return -1;
+        System.out.println(decrypt(credentials.get(0).getPasswd(), _passwd, _email + _passwd));*/
+
+        for (int i = 0; i < users.size(); ++i)
+            if (users.get(i).getEmail().equals(_email))
+                if (decrypt(credentials.get(i).getPasswd(), _passwd, _email + _passwd).equals(_email))
+                    return users.get(i).getId();
+
+        return -1;
+
     }
 
 }
