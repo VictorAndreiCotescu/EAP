@@ -35,7 +35,10 @@ public class Manager {
     private File auctionsFile = new File ("src/main/java/auctions.csv");
 
 
-
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
 
 
     private static final Manager instance = new Manager();
@@ -50,15 +53,15 @@ public class Manager {
     public void system() throws ParseException, IOException {
 
         int userTryingToLogIn = startSession();
-        if (userTryingToLogIn > 2) // daca logIn returneaza corect
+        if (userTryingToLogIn > 2) {// daca logIn returneaza corect
+            clearScreen();
             session(userTryingToLogIn);
+        }
 
 
     }
 
     public int startSession() throws ParseException, IOException {
-
-
 
 
         logger.log("login session started");
@@ -74,12 +77,13 @@ public class Manager {
 
             case 2:
                 if (createUser()) { // create user returneaza bool in functie de success/fail
+                    clearScreen();
                     startSession();
-
                 }
                 return 1;
 
             case 3:
+                clearScreen();
                 return 0;
 
             default:
@@ -93,6 +97,105 @@ public class Manager {
     public void session(int userId) throws IOException {
         logger.log("user succesfully logged in");
         System.out.println("Bine ati venit in contul dvs.!");
+
+
+        System.out.println("1. Active auctions"); //extendsclass.com/csv-generator.html for users also
+        System.out.println("2. Rgister an object"); //add an obgect to auction
+        System.out.println("3. Your account"); //1. balance 2. addCard 3. Transactions etc?
+        System.out.println("4. Settings"); //
+        System.out.println("5. Exit"); //TODO sign out only option
+
+        Scanner cin = new Scanner(System.in);
+        switch (Integer.parseInt(cin.nextLine())) {
+
+            case 1:
+
+            case 2:
+
+            case 3:
+
+
+
+            case 4:
+
+            case 5:
+                logger.log("user finished session");
+                clearScreen();
+                yourAcc(userId);
+                return;
+
+
+            default:
+
+        }
+
+    }
+
+    public void yourAcc(int userId) throws IOException {
+        BufferedReader br = null;
+        String[] parts = {""};
+        try {
+
+            br = new BufferedReader(new FileReader("src/main/java/accs.csv"));
+            String sCurrentLine;
+
+
+            sCurrentLine = br.readLine();
+            String lastLine = sCurrentLine;
+            parts = lastLine.split(",");
+            while (Integer.parseInt(parts[0]) != userId) {
+                sCurrentLine = br.readLine();
+                lastLine = sCurrentLine;
+                parts = lastLine.split(",");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        clearScreen();
+        System.out.println("User: " + parts[1] + " ID: " + parts[0]  + '\n');
+        System.out.println("Email:" + parts[2] + '\n');
+        System.out.println("Balance: " + parts[4]);
+
+
+        System.out.println("1. Add a card");
+        System.out.println("2. Top up");
+        System.out.println("3. Change password");
+        System.out.println("4. Back");
+
+
+
+        Scanner cin = new Scanner(System.in);
+        switch (Integer.parseInt(cin.nextLine())) {
+
+            case 1:
+                /*clearScreen();
+                logger.log("user wwants to add a card")
+                addCard(userId);*/
+            case 2:
+               /* clearScreen();
+                logger.log("user wants to top up a card");
+                topUp(userId, idCard);*/ //more cards maybe?
+            case 3:
+               /* clearScreen();
+                logger.log("user wants to change password");
+                changePasswd(userId); */
+            case 4:
+                clearScreen();
+                session(userId);
+
+            default:
+
+        }
+
+
+
     }
 
     public static String encrypt(String strToEncrypt, String SECRET_KEY, String SALT) {
@@ -252,11 +355,14 @@ public class Manager {
 
         System.out.println(decrypt(credentials.get(0).getPasswd(), _passwd, _email + _passwd));*/
 
-        for (int i = 0; i < users.size(); ++i)
+        for (int i = 0; i < users.size(); ++i) {
+            //System.out.println(users.get(i).getId() + users.get(i).getEmail());
             if (users.get(i).getEmail().equals(_email))
-                if (decrypt(credentials.get(i).getPasswd(), _passwd, _email + _passwd).equals(_email))
+                if (decrypt(credentials.get(i).getPasswd(), _passwd, _email + _passwd).equals(_email)) {
+                    //System.out.println(users.get(i).getId());
                     return users.get(i).getId();
-
+                }
+        }
         return -1;
 
     }
