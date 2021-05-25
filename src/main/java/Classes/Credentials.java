@@ -29,5 +29,6 @@ public class Credentials {
 
     private int userId;
     private String passwd;
+    private int cvv;
 
 }

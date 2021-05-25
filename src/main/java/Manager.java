@@ -1,21 +1,21 @@
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.security.spec.KeySpec;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 
 import Classes.*;
 import RW.*;
+import DBConn.*;
+import Tools.*;
+import Repositories.*;
+import Menus.*;
+
 
 public class Manager {
 
@@ -35,14 +35,7 @@ public class Manager {
     private File credsFile = new File ("src/main/java/creds.csv");
     private File transactionsFile = new File ("src/main/java/transactions.csv");
     private File auctionsFile = new File ("src/main/java/auctions.csv");
-
-
-
-
-    public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
+    private Connection connection = DBConnection.connectDB();
 
 
     private static final Manager instance = new Manager();
@@ -54,147 +47,50 @@ public class Manager {
     }
 
 
-    public void system() throws ParseException, IOException {
+    public void system() throws ParseException, IOException, SQLException {
 
-        int userTryingToLogIn = startSession();
-        if (userTryingToLogIn > 2) {// daca logIn returneaza corect
-            clearScreen();
+        userRepo.insertUserOnStart(); //add default admin user
+        cardRepo.addDefaultCardToAdmin(); //add card to admin
+
+        int userTryingToLogIn = startSession(connection);
+        if (userTryingToLogIn > 0) {// daca logIn returneaza corect
+            Tools.clearScreen();
             session(userTryingToLogIn);
-        }
-
-
-    }
-
-    public int startSession() throws ParseException, IOException {
-
-
-        logger.log("login session started");
-        System.out.println("1. Log In");
-        System.out.println("2. Register");
-        System.out.println("3. Exit");
-
-        Scanner cin = new Scanner(System.in);
-        switch (Integer.parseInt(cin.nextLine())) {
-
-            case 1:
-                return logIn(); //logIn returneaza userId int
-
-            case 2:
-                if (createUser()) { // create user returneaza bool in functie de success/fail
-                    clearScreen();
-                    startSession();
-                }
-                return 1;
-
-            case 3:
-                clearScreen();
-                return 0;
-
-            default:
-                logger.log("login failed by wrong user input");
-                startSession();
-                break;
-        }
-        return 0;
-    }
-
-    public void session(int userId) throws IOException {
-        logger.log("user succesfully logged in");
-        System.out.println("Bine ati venit in contul dvs.!");
-
-
-        System.out.println("1. Active auctions"); //extendsclass.com/csv-generator.html for users also
-        System.out.println("2. Rgister an object"); //add an obgect to auction
-        System.out.println("3. Your account"); //1. balance 2. addCard 3. Transactions etc?
-        System.out.println("4. Settings"); //
-        System.out.println("5. Exit"); //TODO sign out only option
-
-        Scanner cin = new Scanner(System.in);
-        switch (Integer.parseInt(cin.nextLine())) {
-
-            case 1:
-                auctions = reader.read(auction,auctionsFile);
-                for(int i = 0;  i < auctions.size(); ++i)
-                    System.out.println(auctions.get(i).getId());
-            case 2:
-
-            case 3:
-
-            case 4:
-
-            case 5:
-                logger.log("user finished session");
-                clearScreen();
-                yourAcc(userId);
-                return;
-
-
-            default:
-
+        } else {
+            Tools.clearScreen();
+            System.out.println("Email or passwd incorrect");
+            system();
         }
 
     }
 
-    public void yourAcc(int userId) throws IOException {
-        BufferedReader br = null;
-        String[] parts = {""};
-        try {
+    public int startSession(Connection connection) throws ParseException, IOException, SQLException {
 
-            br = new BufferedReader(new FileReader("src/main/java/accs.csv"));
-            String sCurrentLine;
+        return Menu.startSession(connection);
 
+    }
 
-            sCurrentLine = br.readLine();
-            String lastLine = sCurrentLine;
-            parts = lastLine.split(",");
-            while (Integer.parseInt(parts[0]) != userId) {
-                sCurrentLine = br.readLine();
-                lastLine = sCurrentLine;
-                parts = lastLine.split(",");
-            }
+    public void session(int userId) throws IOException, SQLException {
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (br != null) br.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        clearScreen();
-        System.out.println("User: " + parts[1] + " ID: " + parts[0]  + '\n' + "Rank: " + parts[5]);
-        System.out.println("Email:" + parts[2] + '\n');
-        System.out.println("Balance: " + parts[4]);
+            Menu.session(userId, connection);
+
+    }
 
 
-        System.out.println("1. Add a card");
-        System.out.println("2. Top up");
-        System.out.println("3. Change password");
-        System.out.println("4. Back");
+    public void getAuctions(Connection connection) throws SQLException {
+
+        PreparedStatement stGetAuctions = connection.prepareStatement("SELECT * from auctions");
+
+        ResultSet resultSet = stGetAuctions.executeQuery();
+
+        while(resultSet.next()){
 
 
+            System.out.println(resultSet.getInt("id"));
+            System.out.println(resultSet.getString("object"));
+            System.out.println(resultSet.getDate("start_date"));
+            System.out.println(resultSet.getInt("minRank") + '\n');
 
-        Scanner cin = new Scanner(System.in);
-        switch (Integer.parseInt(cin.nextLine())) {
-
-            case 1:
-                /*clearScreen();
-                logger.log("user wwants to add a card")
-                addCard(userId);*/
-            case 2:
-               /* clearScreen();
-                logger.log("user wants to top up a card");
-                topUp(userId, idCard);*/ //more cards maybe?
-            case 3:
-               /* clearScreen();
-                logger.log("user wants to change password");
-                changePasswd(userId); */
-            case 4:
-                clearScreen();
-                session(userId);
-
-            default:
 
         }
 
@@ -202,115 +98,19 @@ public class Manager {
 
     }
 
-    public static String encrypt(String strToEncrypt, String SECRET_KEY, String SALT) {
-        try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
+    public void yourAcc(int userId, Connection connection) throws IOException, SQLException {
 
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+        Menu.yourAcc(userId, connection);
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-            return Base64.getEncoder()
-                    .encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
-        }
-        return null;
     }
 
-    public static String decrypt(String strToDecrypt, String SECRET_KEY, String SALT) {
-        try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
 
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+    public boolean createUser(Connection connection) throws ParseException, IOException, SQLException {
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
-        }
-        return null;
-    }
-
-    public static String decrypt(String strEncrypted, String strKey) throws Exception {
-        String strData;
+        //partea 2 csv
+        /*CSVWriter csvWriter = CSVWriter.getInstance();
 
         try {
-            SecretKeySpec skeyspec = new SecretKeySpec(strKey.getBytes(), "Blowfish");
-            Cipher cipher = Cipher.getInstance("Blowfish");
-            cipher.init(Cipher.DECRYPT_MODE, skeyspec);
-            byte[] decrypted = cipher.doFinal(strEncrypted.getBytes());
-            strData = new String(decrypted);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e);
-        }
-        return strData;
-    }
-
-    public boolean isValidEmailAddress(String email) {
-        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        return m.matches();
-    }
-
-    public boolean createUser() throws ParseException, IOException {
-
-
-        Scanner cin = new Scanner(System.in);
-        System.out.print("Email: ");
-        String _email = cin.nextLine();
-        while (!isValidEmailAddress(_email)) { //TODO check if unique
-            System.err.println("Email not ok. Try Again.");
-            System.out.print("Email: ");
-            _email = cin.nextLine();
-        }
-
-        System.out.print("Name: ");
-        String _name = cin.nextLine();
-
-        System.out.print("Set password: ");
-        String _passwd = cin.nextLine();
-        System.out.print("Confirm password: ");
-        String _passwdCheck = cin.nextLine();
-        while (!_passwd.equals(_passwdCheck)) {
-            System.err.print("Password must match! Try Again.\n");
-            System.out.print("Set password: ");
-            _passwd = cin.nextLine();
-            System.out.print("Confirm password: ");
-            _passwdCheck = cin.nextLine();
-        }
-
-        //TODO check min 18
-        System.out.print("Date of birth: ");
-        String _dob = cin.nextLine();
-
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date _date = format.parse(_dob);
-
-        String strDate = format.format(_date);
-
-
-        User user = new User(_name, _email, strDate, 0.0, 0);
-        Credentials credentials = new Credentials(user.getId(), encrypt(_email, _passwd, _email + _passwd));
-
-
-        CSVWriter csvWriter = CSVWriter.getInstance();
-
-        try {
-            //To accounts csv
-
             csvWriter.write(user);
             csvWriter.write(credentials);
 
@@ -319,13 +119,17 @@ public class Manager {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return false;
+        }*/
+
+        //partea 3 local database
+        return userRepo.insertUser();
+
     }
 
-    public void addCard(User user) {
+    public void addCard(User user) throws SQLException, IOException {
 
-        Scanner cin = new Scanner(System.in);
+        //partea 2 csv
+        /*Scanner cin = new Scanner(System.in);
 
         System.out.print("Classes.Card number: ");
         String cardNumber = cin.nextLine();
@@ -335,39 +139,17 @@ public class Manager {
 
         Card card = new Card(user.getId(), cardNumber, cvv);
 
-        user.addCard(card);
+        user.addCard(card);*/
+
+
+        //partea 3 local database
+        cardRepo.addCard(user.getId());
 
     }
 
-    public int logIn() {
+    public int logIn(Connection connection) throws SQLException {
 
-        users = reader.read(user, usersFile);
-        credentials = reader.read(creds, credsFile);
-
-        Scanner cin = new Scanner(System.in);
-
-        System.out.print("Email: ");
-        String _email = cin.nextLine();
-
-        System.out.print("Password: ");
-        String _passwd = cin.nextLine();
-
-        /*System.out.println(decrypt(values[0], _passwd, _email + _passwd));
-                System.out.println(decrypt(values[1], _email, _email + _passwd));*/
-
-       /* System.out.println(credentials.get(0).getPasswd());
-
-        System.out.println(decrypt(credentials.get(0).getPasswd(), _passwd, _email + _passwd));*/
-
-        for (int i = 0; i < users.size(); ++i) {
-            //System.out.println(users.get(i).getId() + users.get(i).getEmail());
-            if (users.get(i).getEmail().equals(_email))
-                if (decrypt(credentials.get(i).getPasswd(), _passwd, _email + _passwd).equals(_email)) {
-                    //System.out.println(users.get(i).getId());
-                    return users.get(i).getId();
-                }
-        }
-        return -1;
+        return Menu.logIn(connection);
 
     }
 

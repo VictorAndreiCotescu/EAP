@@ -74,13 +74,13 @@ public class User {
         this.rank = rank;
     }
 
-    public List<Card> getCards() {
-        return cards;
+    public String getCards() {
+        return card;
     }
 
-    public void addCard(Card card){
+    /*public void addCard(Card card){
         this.cards.add(card);
-    }
+    }*/
 
     private static final AtomicInteger counter = new AtomicInteger();
     private final int id;
@@ -89,7 +89,7 @@ public class User {
     private String dob;
     private double balance;
     private int rank;
-    private List<Card> cards = new ArrayList<>();
+    private String card;
     private TransactionHistory transactionHistory = new TransactionHistory();
 
 

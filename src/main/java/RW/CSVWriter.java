@@ -51,7 +51,6 @@ public class CSVWriter<T> {
 
     }
 
-
     public void write(T obj) throws IOException {
 
 

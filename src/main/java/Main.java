@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 
 import java.io.FileInputStream;
@@ -17,7 +18,7 @@ public class Main {
 
 
 
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws ParseException, IOException, SQLException {
 
         Manager manager = Manager.getInstance();
         manager.system();

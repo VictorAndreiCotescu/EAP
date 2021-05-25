@@ -1,16 +1,74 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project>
+<modelVersion>4.0.0</modelVersion>
+<groupId>mysql</groupId>
+<artifactId>auction_app</artifactId>
+<version>8.0.19</version>
+<packaging>jar</packaging>
 
-    <groupId>groupId</groupId>
-    <artifactId>EAPproj</artifactId>
-    <version>1.0-SNAPSHOT</version>
+<name>MySQL Connector/J</name>
+<description>JDBC Type 4 driver for MySQL</description>
 
-    <properties>
-        <maven.compiler.source>15</maven.compiler.source>
-        <maven.compiler.target>15</maven.compiler.target>
-    </properties>
-    
-</project>
+<build>
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+        </configuration>
+    </plugin>
+</plugins>
+</build>
+
+<licenses>
+<license>
+    <name>The GNU General Public License, v2 with FOSS exception</name>
+    <distribution>repo</distribution>
+    <comments>For detailed license information see the LICENSE file in this distribution.</comments>
+</license>
+</licenses>
+
+<url>https://dev.mysql.com/doc/connector-j/en/</url>
+
+<scm>
+<connection>scm:git:git@github.com:mysql/mysql-connector-j.git</connection>
+<url>https://github.com/mysql/mysql-connector-j</url>
+</scm>
+
+<organization>
+<name>Oracle Corporation</name>
+<url>https://www.oracle.com</url>
+</organization>
+
+<dependencies>
+<dependency>
+    <groupId>com.google.protobuf</groupId>
+    <artifactId>protobuf-java</artifactId>
+    <version>3.6.1</version>
+</dependency>
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.5</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.7.5</version>
+</dependency>
+
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.18</version>
+</dependency>
+
+<dependency>
+    <groupId>com.github.oshi</groupId>
+    <artifactId>oshi-core</artifactId>
+    <version>LATEST</version>
+</dependency>
+</dependencies>
+        </project>
