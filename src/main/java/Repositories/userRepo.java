@@ -31,7 +31,7 @@ public class userRepo {
 
             stAddUser.setInt    (1, 1);
             stAddUser.setString (2, "admin");
-            stAddUser.setString (3, "admin@auction.ro\n");
+            stAddUser.setString (3, "admin@auction.ro");
             stAddUser.setString (4, "03/12/1999");
             stAddUser.setDouble (5, 0.0);
             stAddUser.setInt    (6, 0);
@@ -40,7 +40,7 @@ public class userRepo {
 
 
             stAddCreds.setInt   (1, 1);
-            stAddCreds.setString(2, Tools.encrypt("adminadmin\n", "admin@auction.ro\n", "admin@auction.ro\n" + "adminadmin\n"));
+            stAddCreds.setString(2, "adminadmin"); //cumva nu merge?
 
             stAddCreds.executeUpdate();
             stAddUser.executeUpdate();
@@ -172,7 +172,6 @@ public class userRepo {
         String passwd = cin.nextLine();
         System.out.print("Confirm new passwd: ");
         String passwdConfirm = cin.nextLine();
-
 
 
         if(passwd.equals(passwdConfirm)) {

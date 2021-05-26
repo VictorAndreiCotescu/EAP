@@ -21,24 +21,24 @@ public class auctionRepo {
 
         try {
 
-            stAddAuction.setInt    (1, 91000);
-            stAddAuction.setString (2, "car");
-            stAddAuction.setString (3, "26/05/2021");
-            stAddAuction.setInt (4, 0);
+            stAddAuction.setInt     (1, 91000);
+            stAddAuction.setString  (2, "car");
+            stAddAuction.setString  (3, "26/05/2021");
+            stAddAuction.setInt     (4, 0);
 
             stAddAuction.executeUpdate();
 
-            stAddAuction.setInt    (1, 91001);
-            stAddAuction.setString (2, "bike");
-            stAddAuction.setString (3, "26/05/2021");
-            stAddAuction.setInt (4, 1);
+            stAddAuction.setInt     (1, 91001);
+            stAddAuction.setString  (2, "bike");
+            stAddAuction.setString  (3, "26/05/2021");
+            stAddAuction.setInt     (4, 1);
 
             stAddAuction.executeUpdate();
 
-            stAddAuction.setInt    (1, 91002);
-            stAddAuction.setString (2, "phone");
-            stAddAuction.setString (3, "26/05/2021");
-            stAddAuction.setInt (4, 1);
+            stAddAuction.setInt     (1, 91002);
+            stAddAuction.setString  (2, "phone");
+            stAddAuction.setString  (3, "26/05/2021");
+            stAddAuction.setInt     (4, 1);
 
 
         } catch (SQLException ex) {

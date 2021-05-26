@@ -22,7 +22,7 @@ public class cardRepo {
     public static void addDefaultCardToAdmin(Connection connection) throws SQLException {
 
         String sqlCredentials = "INSERT INTO credentials (cvv) VALUES (?)";
-        String sqlCard = "INSERT INTO user (cards) VALUES (?)";
+        String sqlCard =        "INSERT INTO user (cards) VALUES (?)";
 
         PreparedStatement stCredentials = connection.prepareStatement(sqlCredentials);
         PreparedStatement stCard = connection.prepareStatement(sqlCard);
@@ -70,8 +70,8 @@ public class cardRepo {
                 PreparedStatement stAddCvv = connection.prepareStatement(sqlAddCvv);
 
                 try{
-                    stInsertCard.setString(1, cardNumber);
-                    stAddCvv.setInt(1, cvv);
+                    stInsertCard.setString  (1, cardNumber);
+                    stAddCvv.setInt         (1, cvv);
 
                     stInsertCard.executeUpdate();
                     stAddCvv.executeUpdate();

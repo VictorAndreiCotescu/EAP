@@ -51,6 +51,7 @@ public class Manager {
 
         userRepo.insertUserOnStart(connection); //add default admin user
         cardRepo.addDefaultCardToAdmin(connection); //add card to admin
+        auctionRepo.insertDefaultAuction(connection); //add some default auctions
 
         int userTryingToLogIn = startSession(connection);
         if (userTryingToLogIn > 0) {// daca logIn returneaza corect
