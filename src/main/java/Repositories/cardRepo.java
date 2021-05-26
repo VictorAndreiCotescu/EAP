@@ -12,13 +12,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.*;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class cardRepo {
 
     private static Connection connection = DBConnection.connectDB();
 
-    public static void addDefaultCardToAdmin() throws SQLException {
+    public static void addDefaultCardToAdmin(Connection connection) throws SQLException {
 
         String sqlCredentials = "INSERT INTO credentials (cvv) VALUES (?)";
         String sqlCard = "INSERT INTO user (cards) VALUES (?)";
@@ -41,7 +42,7 @@ public class cardRepo {
 
     }
 
-    public static void addCard(int userId) throws SQLException, IOException {
+    public static void addCard(int userId) throws SQLException, IOException, ParseException {
 
         Scanner cin = new Scanner(System.in);
 
@@ -62,8 +63,8 @@ public class cardRepo {
 
             if (resultSet.next()){
 
-                String sqlInsertCard = "INSERT INTO user (cards) values (?)";
-                String sqlAddCvv = "INSERT INTO credentials (cvv) values (?)";
+                String sqlInsertCard =  "INSERT INTO user (cards) values (?)";
+                String sqlAddCvv =      "INSERT INTO credentials (cvv) values (?)";
 
                 PreparedStatement stInsertCard = connection.prepareStatement(sqlInsertCard);
                 PreparedStatement stAddCvv = connection.prepareStatement(sqlAddCvv);
@@ -86,7 +87,7 @@ public class cardRepo {
             }
 
 
-        } catch (SQLException | IOException ex){
+        } catch (SQLException | IOException | ParseException ex){
             System.out.println(ex);
             Menu.yourAcc(userId, connection);
         }

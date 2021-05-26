@@ -2,6 +2,7 @@ package Classes;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import Tools.*;
 
 public class User {
     public User(String name, String email, String dob, double balance, int rank) {

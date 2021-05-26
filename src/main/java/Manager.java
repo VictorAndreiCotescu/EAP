@@ -49,8 +49,8 @@ public class Manager {
 
     public void system() throws ParseException, IOException, SQLException {
 
-        userRepo.insertUserOnStart(); //add default admin user
-        cardRepo.addDefaultCardToAdmin(); //add card to admin
+        userRepo.insertUserOnStart(connection); //add default admin user
+        cardRepo.addDefaultCardToAdmin(connection); //add card to admin
 
         int userTryingToLogIn = startSession(connection);
         if (userTryingToLogIn > 0) {// daca logIn returneaza corect
@@ -70,7 +70,7 @@ public class Manager {
 
     }
 
-    public void session(int userId) throws IOException, SQLException {
+    public void session(int userId) throws IOException, SQLException, ParseException {
 
             Menu.session(userId, connection);
 
@@ -85,23 +85,17 @@ public class Manager {
 
         while(resultSet.next()){
 
-
             System.out.println(resultSet.getInt("id"));
             System.out.println(resultSet.getString("object"));
             System.out.println(resultSet.getDate("start_date"));
             System.out.println(resultSet.getInt("minRank") + '\n');
 
-
         }
-
-
-
     }
 
-    public void yourAcc(int userId, Connection connection) throws IOException, SQLException {
+    public void yourAcc(int userId, Connection connection) throws IOException, SQLException, ParseException {
 
         Menu.yourAcc(userId, connection);
-
     }
 
 
@@ -126,7 +120,7 @@ public class Manager {
 
     }
 
-    public void addCard(User user) throws SQLException, IOException {
+    public void addCard(User user) throws SQLException, IOException, ParseException {
 
         //partea 2 csv
         /*Scanner cin = new Scanner(System.in);

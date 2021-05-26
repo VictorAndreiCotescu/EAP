@@ -1,7 +1,5 @@
 package Menus;
 
-
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,8 +36,10 @@ public class Menu {
                 if (userRepo.insertUser()) { // create user returneaza bool in functie de success/fail
                     Tools.clearScreen();
                     startSession(connection);
+                } else {
+                    logIn(connection);
                 }
-                return 1;
+                //return 1; de ce
 
             case 3:
                 connection.close();
@@ -53,18 +53,33 @@ public class Menu {
         return 0;
     }
 
-    public static void session(int userId, Connection connection) throws IOException, SQLException {
+    public static void session(int userId, Connection connection) throws IOException, SQLException, ParseException {
 
         logger.log("user succesfully logged in");
         System.out.println("welcome");
 
         List<Auction> auctions = new ArrayList<>();
-        //TODO incarca din db
+        String sqlGetAuctions = "SELECT * FROM auctions";
+        PreparedStatement stGetAuctions = connection.prepareStatement(sqlGetAuctions);
+
+        try{
+            ResultSet resultSet = stGetAuctions.executeQuery();
+            while(resultSet.next()){
+
+                Auction auction = new Auction(  resultSet.getInt    (   "id"            ),
+                                                resultSet.getString (   "object"        ),
+                                                resultSet.getString (   "start_date"    ),
+                                                resultSet.getInt    (   "minRank"       ));
+                auctions.add(auction);
+            }
+        } catch (SQLException ex){
+            System.out.println(ex);
+        }
+
 
         System.out.println("1. Active auctions"); //extendsclass.com/csv-generator.html for users also
         System.out.println("2. Rgister an object"); //add an obgect to auction
         System.out.println("3. Your account"); //1. balance 2. addCard 3. Transactions etc?
-        System.out.println("4. Settings"); //
         System.out.println("5. Exit"); //TODO sign out only option
 
         Scanner cin = new Scanner(System.in);
@@ -77,15 +92,16 @@ public class Menu {
                     System.out.println(auctions.get(i).getId());*/
 
                 //etapa 3 local database
-
+                Tools.clearScreen();
+                for(int i = 0; i < auctions.size(); ++i)
+                    System.out.println(auctions.get(i));
 
             case 2:
-
+                //timp?
             case 3:
+                Tools.clearScreen();
                 yourAcc(userId, connection);
             case 4:
-
-            case 5:
                 logger.log("user finished session");
                 connection.close();
                 Tools.clearScreen();
@@ -97,7 +113,7 @@ public class Menu {
         }
     }
 
-    public static void yourAcc(int userId, Connection connection) throws IOException, SQLException {
+    public static void yourAcc(int userId, Connection connection) throws IOException, SQLException, ParseException {
 
         //partea 2 csv
         /*BufferedReader br = null;
@@ -137,7 +153,8 @@ public class Menu {
         System.out.println("1. Add a card");
         System.out.println("2. Top up");
         System.out.println("3. Change password");
-        System.out.println("4. Back");
+        System.out.println("4. Delete account");
+        System.out.println("5. Back");
 
 
 
@@ -153,14 +170,22 @@ public class Menu {
                 logger.log("user wants to top up a card");
                 topUp(userId, idCard);*/ //more cards maybe?
             case 3:
-               /* clearScreen();
+                Tools.clearScreen();
                 logger.log("user wants to change password");
-                changePasswd(userId); */
+                if(userRepo.changePassword(userId, connection))
+                    session(userId, connection);
+                else
+                    session(userId, connection);
             case 4:
                 Tools.clearScreen();
+                logger.log("user wants to delete account");
+                if(userRepo.deleteUser(userId, connection))
+                    startSession(connection);
+                else
+                    session(userId, connection);
+            case 5:
+                Tools.clearScreen();
                 session(userId, connection);
-
-            default:
 
         }
     }

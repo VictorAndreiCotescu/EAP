@@ -17,12 +17,11 @@ public class userRepo {
 
     private static Connection connection = DBConnection.connectDB();
 
-    public userRepo userRepo;
 
-    public static void insertUserOnStart() throws SQLException {
 
-        String sqlUser = "INSERT INTO user (id, name, email, dob, balance, `rank`, cards, transaction_history) VALUES (?,?,?,?,?,?,?,?)";
+    public static void insertUserOnStart(Connection connection) throws SQLException {
 
+        String sqlUser =        "INSERT INTO user (id, name, email, dob, balance, `rank`, cards, transaction_history) VALUES (?,?,?,?,?,?,?,?)";
         String sqlCredentials = "INSERT INTO credentials (id_user, passwd) VALUES (?,?)";
 
         PreparedStatement stAddUser = connection.prepareStatement(sqlUser);
@@ -30,18 +29,18 @@ public class userRepo {
 
         try {
 
-            stAddUser.setInt(1, Tools.generateId(connection));
-            stAddUser.setString(2, "admin");
-            stAddUser.setString(3, "admin@auction.ro");
-            stAddUser.setString(4, "03/12/1999");
-            stAddUser.setDouble(5, 0.0);
-            stAddUser.setInt(6, 0);
-            stAddUser.setInt(7, 0);
-            stAddUser.setString(8, "no transaction history");
+            stAddUser.setInt    (1, 1);
+            stAddUser.setString (2, "admin");
+            stAddUser.setString (3, "admin@auction.ro\n");
+            stAddUser.setString (4, "03/12/1999");
+            stAddUser.setDouble (5, 0.0);
+            stAddUser.setInt    (6, 0);
+            stAddUser.setInt    (7, 0);
+            stAddUser.setString (8, "no transaction history");
 
 
-            stAddCreds.setInt(1, Tools.generateId(connection));
-            stAddCreds.setString(2, Tools.encrypt("adminadmin", "admin@auction.ro", "admin@auction.ro" + "adminadmin"));
+            stAddCreds.setInt   (1, 1);
+            stAddCreds.setString(2, Tools.encrypt("adminadmin\n", "admin@auction.ro\n", "admin@auction.ro\n" + "adminadmin\n"));
 
             stAddCreds.executeUpdate();
             stAddUser.executeUpdate();
@@ -59,6 +58,7 @@ public class userRepo {
         String _email = cin.nextLine();
 
         while (!Tools.isValidEmailAddress(_email)) {
+
             System.err.println("Email not ok. Try Again.");
             System.out.print("Email: ");
             _email = cin.nextLine();
@@ -91,9 +91,8 @@ public class userRepo {
 
 
         User user = new User(_name, _email, strDate, 0.0, 0);
-        Credentials credentials = new Credentials(user.getId(), Tools.encrypt(_email, _passwd, _email + _passwd));
-        String sqlUser = "INSERT INTO user (id, name, email, dob, balance, `rank`, cards, transaction_history) VALUES (?,?,?,?,?,?,?,?)";
 
+        String sqlUser =        "INSERT INTO user (id, name, email, dob, balance, `rank`, cards, transaction_history) VALUES (?,?,?,?,?,?,?,?)";
         String sqlCredentials = "INSERT INTO credentials (id_user, passwd) VALUES (?,?)";
 
         PreparedStatement stAddUser = connection.prepareStatement(sqlUser);
@@ -111,7 +110,7 @@ public class userRepo {
 
 
             stAddCreds.setInt   (1, user.getId());
-            stAddCreds.setString(2, Tools.encrypt(user.getEmail(), credentials.getPasswd(), user.getEmail() + credentials.getPasswd()));
+            stAddCreds.setString(2, _passwd);
 
             stAddCreds.executeUpdate();
             stAddUser.executeUpdate();
@@ -120,6 +119,91 @@ public class userRepo {
             System.out.println(ex);
         }
         return false;
+    }
+
+    public static boolean deleteUser(int userId, Connection connection) throws SQLException {
+
+
+        Tools.clearScreen();
+
+        Scanner cin = new Scanner(System.in);
+        System.out.print("Are you sure you want to delete your account? (Y/N)");
+        String confirmation = cin.nextLine();
+
+        if(confirmation.equals('y') || confirmation.equals('Y')) {
+
+            String sqlDeleteUser =              "DELETE FROM user WHERE id = ?";
+            String sqlDeleteUserCredentials =   "DELETE FROM credentials WHERE id_user = ?";
+            String sqlDeleteUserCards =         "DELETE FROM transaction_history WHERE id_user = ?";
+
+            PreparedStatement stDeleteUser = connection.prepareStatement(sqlDeleteUser);
+            PreparedStatement stDeleteUserCredentials = connection.prepareStatement(sqlDeleteUserCredentials);
+            PreparedStatement stDeleteUserTransactionHistory = connection.prepareStatement(sqlDeleteUserCards);
+            PreparedStatement stCommit = connection.prepareStatement("COMMIT");
+            try {
+
+                stDeleteUser.setInt(1, userId);
+                stDeleteUserCredentials.setInt(1, userId);
+                stDeleteUserTransactionHistory.setInt(1, userId);
+
+                stDeleteUser.executeUpdate();
+                stDeleteUserCredentials.executeUpdate();
+                stDeleteUserTransactionHistory.executeUpdate();
+                stCommit.executeQuery();
+
+                return true;
+
+            } catch (SQLException ex) {
+                System.out.println(ex);
+                return false;
+            }
+        } else {
+            Tools.clearScreen();
+            return false;
+        }
+    }
+
+    public static boolean changePassword(int userId, Connection connection) throws SQLException {
+
+        Tools.clearScreen();
+
+        Scanner cin = new Scanner(System.in);
+        System.out.print("New passwd: ");
+        String passwd = cin.nextLine();
+        System.out.print("Confirm new passwd: ");
+        String passwdConfirm = cin.nextLine();
+
+
+
+        if(passwd.equals(passwdConfirm)) {
+
+            String sqlDeleteUser = "UPDATE credentials SET passwd = ? WHERE id_user = ?";
+
+            PreparedStatement stUpdatePasswd = connection.prepareStatement(sqlDeleteUser);
+            PreparedStatement stCommit = connection.prepareStatement("COMMIT");
+
+            try {
+
+                stUpdatePasswd.setString(1, passwd);
+                stUpdatePasswd.setInt(2, userId);
+
+                stUpdatePasswd.executeUpdate();
+                stCommit.executeUpdate();
+
+                return true;
+            } catch (SQLException ex) {
+                System.out.println(ex);
+            }
+
+        } else {
+
+            Tools.clearScreen();
+            return false;
+
+        }
+
+        return false;
+
     }
 
 

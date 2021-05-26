@@ -88,7 +88,7 @@ public class Tools {
 
     public static int generateId(Connection connection) throws SQLException {
 
-        String sqlGetLastId = "SELECT MAX(id) FROM user";
+        String sqlGetLastId = "SELECT MAX(`id`) FROM user";
         PreparedStatement stIdMax = connection.prepareStatement(sqlGetLastId);
 
         ResultSet resultSet = stIdMax.executeQuery();

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Auction {
 
-    public Auction(int id, List<Object> objects, String startDate, int minRankEntry) {
+    public Auction(int id, String objects, String startDate, int minRankEntry) {
         this.id = id;
         this.objects = objects;
         this.startDate = startDate;
@@ -24,11 +24,11 @@ public class Auction {
         this.id = id;
     }
 
-    public List<Object> getObjects() {
+    public String getObjects() {
         return objects;
     }
 
-    public void setObjects(List<Object> objects) {
+    public void setObjects(String objects) {
         this.objects = objects;
     }
 
@@ -49,7 +49,7 @@ public class Auction {
     }
 
     private int id;
-    private List<Object> objects;
+    private String objects;
     private String startDate;
     private int minRankEntry;
 }

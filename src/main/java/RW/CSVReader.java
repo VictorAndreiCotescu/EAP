@@ -132,6 +132,7 @@ public class CSVReader<T> {
     }
 
     public List<T> readAuctions(T obj) {
+
         BufferedReader br = null;
         String[] parts = {""};
         List<T> lst = new ArrayList<>();
@@ -154,9 +155,11 @@ public class CSVReader<T> {
                 object = new Classes.Object(parts[1]);
                 objects.add((Classes.Object) object);
 
+                String object1 = parts[1];
+
                 List<String> lst2 = new ArrayList<>();
                 lst2.add(parts[1]);
-                lst.add((T) new Auction(Integer.parseInt(parts[0]), objects, parts[2], Integer.parseInt(parts[3])));
+                lst.add((T) new Auction(Integer.parseInt(parts[0]), object1, parts[2], Integer.parseInt(parts[3])));
             }
 
         } catch (IOException e) {
